@@ -1,0 +1,7 @@
+# oxc-project/oxc#21007
+!*
+
+node_modules
+dist
+.yalc
+yalc.lock
