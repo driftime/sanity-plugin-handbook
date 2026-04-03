@@ -1,5 +1,11 @@
 import type { ComponentType } from "react";
-import type { DocumentDefinition, PortableTextObject, SchemaTypeDefinition } from "sanity";
+import type {
+  DocumentDefinition,
+  PortableTextBlock,
+  PortableTextObject,
+  SanityDocument,
+  SchemaTypeDefinition,
+} from "sanity";
 
 declare module "@sanity/types" {
   interface FieldDefinitionBase {
@@ -56,4 +62,36 @@ export interface HandbookConfig {
   groups?: HandbookStructureGroup[];
   /** Custom Portable Text block definitions for guide content. */
   blocks?: HandbookBlockDefinition[];
+}
+
+/** @public */
+export interface HandbookGuideGroup {
+  /** Unique key assigned by Sanity for this array item. */
+  _key: string;
+  /** Display title for this group in the sidebar. */
+  title: string;
+  /** Ordered array of guide references. */
+  guides: SanityHandbookGuide[];
+}
+
+/** @public */
+export interface SanityHandbook extends SanityDocument {
+  /** Document type identifier. */
+  _type: "handbook.handbook";
+  /** Ordered array of groups, each containing a title and guide references. */
+  groups: HandbookGuideGroup[];
+}
+
+/** @public */
+export interface SanityHandbookGuide extends SanityDocument {
+  /** Document type identifier. */
+  _type: "handbook.guide";
+  /** Unique key assigned by Sanity for this array item. */
+  _key: string;
+  /** Display title for this guide. */
+  title: string;
+  /** Brief description shown beneath the guide heading. */
+  description?: string;
+  /** Portable Text content of the guide. */
+  content: PortableTextBlock[];
 }
