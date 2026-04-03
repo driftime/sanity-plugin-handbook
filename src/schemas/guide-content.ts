@@ -47,6 +47,7 @@ export function createGuideContentField(customBlocks: HandbookBlockDefinition[] 
       }),
       defineArrayMember({ type: "handbook.image" }),
       defineArrayMember({ type: "handbook.video" }),
+      defineArrayMember({ type: "handbook.code" }),
       ...customBlocks.map((block) => defineArrayMember({ type: block.schema.name })),
     ],
   });
