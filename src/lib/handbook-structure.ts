@@ -1,7 +1,8 @@
-import { BookOpenTextIcon, BookTextIcon } from "lucide-react";
 import type { CurrentUser } from "sanity";
 import type { StructureBuilder } from "sanity/structure";
 
+import { BookOpenTextIcon } from "../icons/book-open-text";
+import { BookTextIcon } from "../icons/book-text";
 import { createSanityIcon } from "./icons";
 import { isPermittedEditor } from "./utils";
 

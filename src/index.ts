@@ -1,6 +1,6 @@
-import { BookTextIcon } from "lucide-react";
 import { definePlugin } from "sanity";
 
+import { BookTextIcon } from "./icons/book-text";
 import { createHandbookTool } from "./layouts/tool";
 import { setHandbookEditors } from "./lib/handbook-structure";
 import { createSanityIcon } from "./lib/icons";

@@ -1,12 +1,14 @@
 import { ChevronDownIcon, ChevronRightIcon } from "@sanity/icons";
 import { Box, Card, Flex, Popover, Stack, Text, useClickOutsideEvent } from "@sanity/ui";
-import { InfoIcon, LightbulbIcon, TriangleAlertIcon } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { FieldDefinition, SchemaType } from "sanity";
 import { useSchema } from "sanity";
 
 import { useHandbookContext } from "../contexts/handbook-context";
+import { InfoIcon } from "../icons/info";
+import { LightbulbIcon } from "../icons/lightbulb";
+import { TriangleAlertIcon } from "../icons/triangle-alert";
 import { defaultIconProps } from "../lib/icons";
 import { convertCase, isDefined } from "../lib/utils";
 

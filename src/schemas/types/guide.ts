@@ -1,6 +1,6 @@
-import { BookOpenTextIcon } from "lucide-react";
 import { defineField, defineType } from "sanity";
 
+import { BookOpenTextIcon } from "../../icons/book-open-text";
 import { createSanityIcon } from "../../lib/icons";
 import type { HandbookBlockDefinition, SanityHandbookGuide } from "../../types";
 import { createGuideContentField } from "../guide-content";

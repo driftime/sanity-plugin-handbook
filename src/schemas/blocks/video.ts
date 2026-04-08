@@ -1,7 +1,7 @@
-import { VideoIcon } from "lucide-react";
 import { defineField, defineType } from "sanity";
 
 import { VideoPreview } from "../../blocks/video/preview";
+import { VideoIcon } from "../../icons/video";
 import { createSanityIcon } from "../../lib/icons";
 
 export const handbookVideoType = defineType({

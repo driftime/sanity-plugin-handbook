@@ -1,6 +1,5 @@
-import { BookOpenTextIcon } from "lucide-react";
-
 import { useHandbookContext } from "../contexts/handbook-context";
+import { BookOpenTextIcon } from "../icons/book-open-text";
 import { createSanityIcon } from "../lib/icons";
 import { isDefined } from "../lib/utils";
 import { ContentPanel } from "./content-panel";

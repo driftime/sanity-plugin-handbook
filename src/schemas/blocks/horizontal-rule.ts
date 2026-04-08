@@ -1,7 +1,7 @@
-import { MinusIcon } from "lucide-react";
 import { defineField, defineType } from "sanity";
 
 import { HorizontalRulePreview } from "../../blocks/horizontal-rule/preview";
+import { MinusIcon } from "../../icons/minus";
 import { createSanityIcon } from "../../lib/icons";
 
 export const handbookHorizontalRuleType = defineType({

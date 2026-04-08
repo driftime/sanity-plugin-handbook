@@ -1,7 +1,9 @@
 import { Card, Flex, Text } from "@sanity/ui";
-import { InfoIcon, LightbulbIcon, TriangleAlertIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { InfoIcon } from "../../icons/info";
+import { LightbulbIcon } from "../../icons/lightbulb";
+import { TriangleAlertIcon } from "../../icons/triangle-alert";
 import { defaultIconProps } from "../../lib/icons";
 
 export type CalloutVariant = "tip" | "info" | "warning";

@@ -1,6 +1,6 @@
 {
   "name": "@driftime/sanity-plugin-handbook",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Schema-driven documentation and editorial guides, built right into Sanity Studio.",
   "keywords": [
     "sanity",
@@ -55,9 +55,6 @@
     "watch": "pkg-utils watch --strict",
     "build": "plugin-kit verify-package --silent && pkg-utils build --strict --clean --check"
   },
-  "dependencies": {
-    "lucide-react": "1.7.0"
-  },
   "devDependencies": {
     "@sanity/browserslist-config": "1.0.5",
     "@sanity/pkg-utils": "10.4.13",
@@ -88,5 +85,8 @@
       "eslintImports": false,
       "scripts": false
     }
+  },
+  "dependencies": {
+    "@driftime/sanity-plugin-handbook": "file:.yalc/@driftime/sanity-plugin-handbook"
   }
 }

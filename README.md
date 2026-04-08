@@ -2,9 +2,9 @@
 
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="/.github/assets/icon-dark.svg" />
-    <source media="(prefers-color-scheme: light)" srcset="/.github/assets/icon.svg" />
-    <img src="/.github/assets/icon.svg" alt="Handbook icon" width="48" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/icon-dark.svg" />
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/icon.svg" />
+    <img src="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/icon.svg" alt="Handbook icon" width="48" />
   </picture>
   <h1>Handbook — A Sanity Plugin</h1>
   <p>Schema-driven documentation and editorial guides, built right into Sanity Studio.</p>
@@ -20,9 +20,9 @@ Handbook adds a dedicated tool to Sanity Studio that serves two purposes: it aut
 
 <figure>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="/.github/assets/handbook-fields-dark.png" />
-    <source media="(prefers-color-scheme: light)" srcset="/.github/assets/handbook-fields.png" />
-    <img src="/.github/assets/handbook-fields.png" alt="The Handbook tool displaying field documentation for a Pages document type, with field names, types, descriptions, and example values" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-fields-dark.png" />
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-fields.png" />
+    <img src="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-fields.png" alt="The Handbook tool displaying field documentation for a Pages document type, with field names, types, descriptions, and example values" />
   </picture>
   <p align="center"><sub><em>Field documentation generated automatically from your schema definitions.</em></sub></p>
 </figure>
@@ -72,9 +72,9 @@ This registers a Handbook tool in the Studio navigation. Opening it displays a s
 
 <figure>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="/.github/assets/handbook-document-types-dark.png" />
-    <source media="(prefers-color-scheme: light)" srcset="/.github/assets/handbook-document-types.png" />
-    <img src="/.github/assets/handbook-document-types.png" alt="The Handbook tool showing document type groups in the sidebar with Singletons and Collections listed" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-document-types-dark.png" />
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-document-types.png" />
+    <img src="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-document-types.png" alt="The Handbook tool showing document type groups in the sidebar with Singletons and Collections listed" />
   </picture>
   <p align="center"><sub><em>Document types organised into groups, browsable from the sidebar.</em></sub></p>
 </figure>
@@ -153,9 +153,9 @@ The Handbook tool displays guides in the sidebar alongside your document types. 
 
 <figure>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="/.github/assets/handbook-structure-guide-dark.png" />
-    <source media="(prefers-color-scheme: light)" srcset="/.github/assets/handbook-structure-guide.png" />
-    <img src="/.github/assets/handbook-structure-guide.png" alt="A guide displayed in the Handbook tool with headings, paragraphs, a callout, a bullet list, and a code block" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-structure-guide-dark.png" />
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-structure-guide.png" />
+    <img src="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-structure-guide.png" alt="A guide displayed in the Handbook tool with headings, paragraphs, a callout, a bullet list, and a code block" />
   </picture>
   <p align="center"><sub><em>Editorial guides authored with Portable Text and rendered directly in the tool.</em></sub></p>
 </figure>
@@ -231,9 +231,9 @@ To add handbook documents to the Structure tool sidebar, use the `handbookStruct
 
 <figure>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="/.github/assets/handbook-structure-dark.png" />
-    <source media="(prefers-color-scheme: light)" srcset="/.github/assets/handbook-structure.png" />
-    <img src="/.github/assets/handbook-structure.png" alt="The Handbook singleton editor in the Structure tool, showing reorderable groups each containing guide references" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-structure-dark.png" />
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-structure.png" />
+    <img src="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-structure.png" alt="The Handbook singleton editor in the Structure tool, showing reorderable groups each containing guide references" />
   </picture>
   <p align="center"><sub><em>The Handbook singleton where groups and their ordering are managed.</em></sub></p>
 </figure>
@@ -263,9 +263,9 @@ Individual guides are authored as `handbook.guide` documents, which can be creat
 
 <figure>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="/.github/assets/handbook-structure-guides-dark.png" />
-    <source media="(prefers-color-scheme: light)" srcset="/.github/assets/handbook-structure-guides.png" />
-    <img src="/.github/assets/handbook-structure-guides.png" alt="The Handbook Guides list in the Structure tool, showing individual guide documents available for editing" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-structure-guides-dark.png" />
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-structure-guides.png" />
+    <img src="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-structure-guides.png" alt="The Handbook Guides list in the Structure tool, showing individual guide documents available for editing" />
   </picture>
   <p align="center"><sub><em>Handbook Guides listed in the Structure tool for authoring and editing.</em></sub></p>
 </figure>

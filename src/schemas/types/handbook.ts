@@ -1,6 +1,7 @@
-import { BookTextIcon, ListPlusIcon } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
+import { BookTextIcon } from "../../icons/book-text";
+import { ListPlusIcon } from "../../icons/list-plus";
 import { createSanityIcon } from "../../lib/icons";
 import { isDefined } from "../../lib/utils";
 import type { SanityHandbook } from "../../types";

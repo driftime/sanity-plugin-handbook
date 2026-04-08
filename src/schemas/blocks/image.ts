@@ -1,7 +1,7 @@
-import { ImageIcon } from "lucide-react";
 import { defineField, defineType } from "sanity";
 
 import { ImagePreview } from "../../blocks/image/preview";
+import { ImageIcon } from "../../icons/image";
 import { createSanityIcon } from "../../lib/icons";
 
 export const handbookImageType = defineType({

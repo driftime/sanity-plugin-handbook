@@ -1,7 +1,7 @@
-import { CodeIcon } from "lucide-react";
 import { defineField, defineType } from "sanity";
 
 import { CodePreview } from "../../blocks/code/preview";
+import { CodeIcon } from "../../icons/code";
 import { createSanityIcon } from "../../lib/icons";
 
 export const handbookCodeType = defineType({

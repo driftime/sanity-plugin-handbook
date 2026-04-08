@@ -1,9 +1,10 @@
-import { BookTextIcon, LayoutGridIcon } from "lucide-react";
 import type { ComponentType, ReactElement } from "react";
 
 import { ContentPanel } from "../components/content-panel";
 import { SidebarGroup } from "../components/sidebar-group";
 import { SidebarTab } from "../components/sidebar-tab";
+import { BookTextIcon } from "../icons/book-text";
+import { LayoutGridIcon } from "../icons/layout-grid";
 import { createSanityIcon } from "../lib/icons";
 import { DocumentTypesOverview } from "./document-types";
 import { HowToUse } from "./how-to-use";

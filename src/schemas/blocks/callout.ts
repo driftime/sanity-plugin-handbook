@@ -1,8 +1,8 @@
-import { MessageCircleQuestionMarkIcon } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 import { CalloutPreview } from "../../blocks/callout/preview";
 import { InlineCodeDecorator, ParagraphDecorator } from "../../components/decorators";
+import { MessageCircleQuestionMarkIcon } from "../../icons/message-circle-question-mark";
 import { createSanityIcon } from "../../lib/icons";
 import { linkAnnotation } from "../annotations/link";
 
