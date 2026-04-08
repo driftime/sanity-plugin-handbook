@@ -62,6 +62,8 @@ export interface HandbookConfig {
   groups?: HandbookStructureGroup[];
   /** Custom Portable Text block definitions for guide content. */
   blocks?: HandbookBlockDefinition[];
+  /** Email addresses permitted to edit handbook documents. */
+  editors?: string[];
 }
 
 /** @public */

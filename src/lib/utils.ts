@@ -15,6 +15,21 @@ export function isDefined<T>(value: T | null | undefined | false): value is T {
 }
 
 /**
+ * Checks whether an email address is in the permitted editors list.
+ * Returns true if no editors list is provided or the list is empty (unrestricted access).
+ *
+ * @param editors - Optional list of permitted email addresses.
+ * @param email - The email address to check.
+ * @returns Whether the email is permitted to edit.
+ */
+export function isPermittedEditor(editors: string[] | undefined, email: string | undefined): boolean {
+  if (!isDefined(editors)) return true;
+  if (!isDefined(email)) return false;
+
+  return editors.includes(email);
+}
+
+/**
  * Converts a string between different casing formats.
  *
  * @param value - The string to convert.

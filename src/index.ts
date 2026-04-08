@@ -2,8 +2,9 @@ import { BookTextIcon } from "lucide-react";
 import { definePlugin } from "sanity";
 
 import { createHandbookTool } from "./layouts/tool";
+import { setHandbookEditors } from "./lib/handbook-structure";
 import { createSanityIcon } from "./lib/icons";
-import { isDefined } from "./lib/utils";
+import { isDefined, isPermittedEditor } from "./lib/utils";
 import { handbookCalloutType } from "./schemas/blocks/callout";
 import { handbookCodeType } from "./schemas/blocks/code";
 import { handbookHorizontalRuleType } from "./schemas/blocks/horizontal-rule";
@@ -22,9 +23,25 @@ export type {
   SanityHandbook,
   SanityHandbookGuide,
 } from "./types";
+export { handbookStructure } from "./lib/handbook-structure";
+export { useIsHandbookEditor } from "./hooks/use-is-handbook-editor";
 
 /** Document types that should not appear in the "create new" menu. */
 const handbookSingletonTypes = new Set(["handbook.handbook"]);
+
+/** All handbook document types used to filter template items for non-editors. */
+const handbookDocumentTypes = new Set(["handbook.handbook", "handbook.guide"]);
+
+/**
+ * Checks whether a template ID matches or is a variant of any type in the given set.
+ *
+ * @param templateId - The template identifier to check.
+ * @param typeSet - The set of document type names to match against.
+ * @returns True if the template ID matches a type or starts with a type prefix.
+ */
+function isHandbookTemplate(templateId: string, typeSet: Set<string>): boolean {
+  return typeSet.has(templateId) || [...typeSet].some((type) => templateId.startsWith(`${type}-`));
+}
 
 /**
  * Validates a single document type group entry in the plugin configuration.
@@ -77,6 +94,9 @@ export function handbookPlugin(config?: HandbookConfig) {
   if (config) validateConfig(config);
 
   const customBlocks = config?.blocks ?? [];
+  const editors = config?.editors;
+  setHandbookEditors(editors);
+
   const guideType = createHandbookGuideType(customBlocks);
 
   return definePlugin(() => ({
@@ -94,6 +114,17 @@ export function handbookPlugin(config?: HandbookConfig) {
       ],
     },
     document: {
+      newDocumentOptions: (templateItems, { creationContext, currentUser }) => {
+        if (creationContext.type === "global" || creationContext.type === "structure") {
+          if (!isPermittedEditor(editors, currentUser?.email)) {
+            return templateItems.filter((item) => !isHandbookTemplate(item.templateId, handbookDocumentTypes));
+          }
+
+          return templateItems.filter((item) => !isHandbookTemplate(item.templateId, handbookSingletonTypes));
+        }
+
+        return templateItems;
+      },
       actions: (actionComponents, { schemaType }) => {
         if (handbookSingletonTypes.has(schemaType)) {
           return actionComponents.filter(({ action }) => action !== "duplicate");
