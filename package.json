@@ -1,6 +1,6 @@
 {
   "name": "@driftime/sanity-plugin-handbook",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Schema-driven documentation and editorial guides, built right into Sanity Studio.",
   "keywords": [
     "sanity",
@@ -85,8 +85,5 @@
       "eslintImports": false,
       "scripts": false
     }
-  },
-  "dependencies": {
-    "@driftime/sanity-plugin-handbook": "file:.yalc/@driftime/sanity-plugin-handbook"
   }
 }
