@@ -2,8 +2,10 @@ import { defineArrayMember, defineField } from "sanity";
 
 import {
   BlockquoteDecorator,
+  BulletListDecorator,
   HeadingDecorator,
   InlineCodeDecorator,
+  NumberListDecorator,
   ParagraphDecorator,
 } from "../components/decorators";
 import type { HandbookBlockDefinition } from "../types";
@@ -41,8 +43,8 @@ export function createGuideContentField(customBlocks: HandbookBlockDefinition[] 
           annotations: [linkAnnotation],
         },
         lists: [
-          { title: "Bullet", value: "bullet" },
-          { title: "Number", value: "number" },
+          { title: "Bullet", value: "bullet", component: BulletListDecorator },
+          { title: "Number", value: "number", component: NumberListDecorator },
         ],
       }),
       defineArrayMember({ type: "handbook.image" }),
