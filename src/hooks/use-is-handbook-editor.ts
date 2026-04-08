@@ -11,7 +11,7 @@ import { isPermittedEditor } from "../lib/utils";
  * @param editors - Optional list of permitted email addresses.
  * @returns Whether the current user can edit handbook documents.
  */
-export function useIsHandbookEditor(editors?: string[]): boolean {
+export function useIsHandbookEditor(editors?: string[]) {
   const user = useCurrentUser();
 
   return isPermittedEditor(editors, user?.email);

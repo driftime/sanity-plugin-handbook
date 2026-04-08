@@ -3,6 +3,13 @@ import { useClient } from "sanity";
 
 import type { SanityHandbook } from "../types";
 
+interface UseHandbookConfigurationReturn {
+  /** Handbook configuration singleton fetched from the dataset. */
+  configuration: SanityHandbook | null;
+  /** Whether configuration data is still loading from the dataset. */
+  loading: boolean;
+}
+
 /** GROQ query that fetches the handbook singleton with expanded guide references. */
 const query = `*[_type == "handbook.handbook"][0]{
   groups[]{
@@ -40,7 +47,7 @@ const listenQuery = '*[_type == "handbook.handbook" || _type == "handbook.guide"
  *
  * @returns An object containing the configuration and a loading flag.
  */
-export function useHandbookConfiguration(): { configuration: SanityHandbook | null; loading: boolean } {
+export function useHandbookConfiguration(): UseHandbookConfigurationReturn {
   const client = useClient({ apiVersion: "2026-01-01" });
   const [configuration, setConfiguration] = useState<SanityHandbook | null>(null);
   const [loading, setLoading] = useState(true);

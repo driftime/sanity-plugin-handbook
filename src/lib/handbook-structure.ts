@@ -1,6 +1,6 @@
 import { BookOpenTextIcon, BookTextIcon } from "lucide-react";
 import type { CurrentUser } from "sanity";
-import type { ListItemBuilder, StructureBuilder } from "sanity/structure";
+import type { StructureBuilder } from "sanity/structure";
 
 import { createSanityIcon } from "./icons";
 import { isPermittedEditor } from "./utils";
@@ -28,10 +28,7 @@ export function setHandbookEditors(editors?: string[]) {
  * @param context - The Structure context containing the current user.
  * @returns An array of list items for the handbook singleton and guides list.
  */
-export function handbookStructure(
-  structureBuilder: StructureBuilder,
-  context: { currentUser: CurrentUser | null },
-): ListItemBuilder[] {
+export function handbookStructure(structureBuilder: StructureBuilder, context: { currentUser: CurrentUser | null }) {
   if (!isPermittedEditor(registeredEditors, context.currentUser?.email)) return [];
 
   const { listItem, document, documentTypeList } = structureBuilder;

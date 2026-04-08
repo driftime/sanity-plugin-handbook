@@ -22,7 +22,7 @@ export function isDefined<T>(value: T | null | undefined | false): value is T {
  * @param email - The email address to check.
  * @returns Whether the email is permitted to edit.
  */
-export function isPermittedEditor(editors: string[] | undefined, email: string | undefined): boolean {
+export function isPermittedEditor(editors: string[] | undefined, email: string | undefined) {
   if (!isDefined(editors)) return true;
   if (!isDefined(email)) return false;
 

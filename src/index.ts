@@ -39,7 +39,7 @@ const handbookDocumentTypes = new Set(["handbook.handbook", "handbook.guide"]);
  * @param typeSet - The set of document type names to match against.
  * @returns True if the template ID matches a type or starts with a type prefix.
  */
-function isHandbookTemplate(templateId: string, typeSet: Set<string>): boolean {
+function isHandbookTemplate(templateId: string, typeSet: Set<string>) {
   return typeSet.has(templateId) || [...typeSet].some((type) => templateId.startsWith(`${type}-`));
 }
 
