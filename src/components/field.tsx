@@ -14,34 +14,70 @@ interface FieldProps {
   field: FieldDefinition;
   /** Current nesting depth for recursive subfield rendering. */
   depth?: number;
+  /** Type names already expanded in the ancestor chain, used to detect cycles. */
+  ancestors?: Set<string>;
 }
 
 interface CompiledField {
   /** Field identifier in the schema. */
   name: string;
-  /** Resolved type object containing the type name, title, description, and nested definitions. */
+  /** Resolved type object containing the type name and base type metadata. */
   type: { name: string; title?: string; description?: string; fields?: unknown[]; of?: unknown[] };
+  /** Custom title set directly on inline object definitions. */
+  title?: string;
+  /** Custom description set directly on inline object definitions. */
+  description?: string;
+  /** Fields defined directly on inline object definitions. */
+  fields?: unknown[];
+  /** Array members defined directly on inline array definitions. */
+  of?: unknown[];
   /** Optional handbook metadata annotations for this field. */
   handbook?: FieldDefinition["handbook"];
 }
 
+interface FieldHintProps {
+  /** Accessible label and popover heading. */
+  label: string;
+  /** Icon element displayed on the hint button. */
+  icon: ReactNode;
+  /** CSS color applied to the hint icon. */
+  color: string;
+  /** Whether the popover is currently visible. */
+  open: boolean;
+  /** Text content displayed inside the popover. */
+  children: string;
+  /** Callback to toggle popover visibility. */
+  onToggle: () => void;
+  /** Callback to close the popover. */
+  onClose: () => void;
+}
+
 /** Schema type names treated as leaf types whose subfields are not displayed. */
 const opaqueTypes = new Set([
-  "slug",
-  "image",
-  "file",
-  "reference",
-  "crossDatasetReference",
-  "geopoint",
-  "datetime",
-  "date",
-  "url",
-  "text",
-  "string",
-  "number",
-  "boolean",
   "block",
+  "boolean",
+  "crossDatasetReference",
+  "date",
+  "datetime",
+  "file",
+  "geopoint",
+  "image",
+  "number",
+  "reference",
+  "slug",
+  "string",
+  "text",
+  "url",
 ]);
+
+/** Fields injected by Sanity's built-in opaque types during schema compilation. */
+const inheritedFieldNames: Partial<Record<string, Set<string>>> = {
+  block: new Set(["children", "level", "listItem", "markDefs", "style"]),
+  file: new Set(["asset", "media"]),
+  geopoint: new Set(["alt", "lat", "lng"]),
+  image: new Set(["asset", "crop", "hotspot", "media"]),
+  slug: new Set(["current", "source"]),
+};
 
 /** Fallback description shown when a schema field has no description defined. */
 const defaultFieldDescription =
@@ -61,19 +97,7 @@ function isCompiledField(value: unknown): value is CompiledField {
 }
 
 /**
- * Type guard that checks whether a value has an `of` array property (e.g. array member definitions).
- *
- * @param value - The value to check.
- * @returns `true` if the value contains an `of` array.
- */
-function hasOfArray(value: unknown): value is { of: unknown[] } {
-  if (typeof value !== "object" || value === null || !("of" in value)) return false;
-
-  return Array.isArray(value.of);
-}
-
-/**
- * Type guard that checks whether a value has a `fields` array property (e.g. object-type definitions).
+ * Type guard that checks whether a value has a `fields` array property.
  *
  * @param value - The value to check.
  * @returns `true` if the value contains a `fields` array.
@@ -85,35 +109,85 @@ function hasFieldsArray(value: unknown): value is { fields: unknown[] } {
 }
 
 /**
+ * Type guard that checks whether a value has an `of` array property.
+ *
+ * @param value - The value to check.
+ * @returns `true` if the value contains an `of` array.
+ */
+function hasOfArray(value: unknown): value is { of: unknown[] } {
+  if (typeof value !== "object" || value === null || !("of" in value)) return false;
+
+  return Array.isArray(value.of);
+}
+
+/**
  * Extracts the string `type` property from an unknown value, if present.
  *
- * @param member - The value to inspect.
+ * @param value - The value to inspect.
  * @returns The type name string, or `undefined`.
  */
-function getTypeName(member: unknown): string | undefined {
-  if (typeof member !== "object" || member === null || !("type" in member)) return undefined;
+function getTypeName(value: unknown) {
+  if (typeof value !== "object" || value === null || !("type" in value)) return undefined;
 
-  return typeof member.type === "string" ? member.type : undefined;
+  return typeof value.type === "string" ? value.type : undefined;
+}
+
+/**
+ * Determines whether a schema type is opaque (a leaf type whose subfields should not be displayed).
+ *
+ * @param typeName - The schema type name to check.
+ * @returns `true` if the type is opaque.
+ */
+function isOpaqueType(typeName: string) {
+  return opaqueTypes.has(typeName);
+}
+
+/**
+ * Extracts the parent type name from a compiled schema type, if present.
+ *
+ * @param resolvedType - The compiled schema type to inspect.
+ * @returns The parent type name, or `undefined`.
+ */
+function getParentTypeName(resolvedType: unknown) {
+  if (typeof resolvedType !== "object" || resolvedType === null || !("type" in resolvedType)) return undefined;
+  if (typeof resolvedType.type !== "object" || resolvedType.type === null || !("name" in resolvedType.type)) {
+    return undefined;
+  }
+
+  return String(resolvedType.type.name);
 }
 
 /**
  * Normalises a compiled schema field into a FieldDefinition-compatible shape.
+ * Tracks visited type names to prevent infinite recursion on circular references.
  *
  * @param field - A compiled schema field or plain field definition.
+ * @param visited - Type names already seen in this normalisation chain.
  * @returns A FieldDefinition-compatible object.
  */
-function normaliseField(field: unknown): FieldDefinition {
+function normaliseField(field: unknown, visited = new Set<string>()) {
   if (isCompiledField(field)) {
+    const typeName = field.type.name;
+
     const result: Record<string, unknown> = {
       name: field.name,
-      type: field.type.name,
-      title: field.type.title,
-      description: field.type.description,
+      type: typeName,
+      title: field.title ?? field.type.title,
+      description: field.description ?? field.type.description,
       handbook: field.handbook,
     };
 
-    if (hasFieldsArray(field.type)) result.fields = field.type.fields.map((subfield) => normaliseField(subfield));
-    if (hasOfArray(field.type)) result.of = field.type.of.map((member) => normaliseField(member));
+    if (!visited.has(typeName)) {
+      const shouldTrack = !opaqueTypes.has(typeName) && typeName !== "object" && typeName !== "array";
+      const next = shouldTrack ? new Set([...visited, typeName]) : visited;
+      const fieldSource = hasFieldsArray(field) ? field : field.type;
+      const ofSource = hasOfArray(field) ? field : field.type;
+
+      if (hasFieldsArray(fieldSource)) {
+        result.fields = fieldSource.fields.map((subfield) => normaliseField(subfield, next));
+      }
+      if (hasOfArray(ofSource)) result.of = ofSource.of.map((member) => normaliseField(member, next));
+    }
 
     // oxlint-disable-next-line no-unsafe-type-assertion -- Constructed to match FieldDefinition shape.
     return result as unknown as FieldDefinition;
@@ -124,51 +198,66 @@ function normaliseField(field: unknown): FieldDefinition {
 }
 
 /**
- * Determines whether a schema type is opaque (a leaf type whose subfields should not be displayed).
+ * Resolves only the fields a custom type adds on top of an opaque base type,
+ * excluding fields injected by the base type during schema compilation.
  *
- * @param typeName - The schema type name to check.
- * @param schema - The Sanity schema registry.
- * @returns `true` if the type is opaque.
+ * @param resolvedType - The compiled or normalised schema type.
+ * @param parentName - The opaque base type name.
+ * @returns The custom fields, or `undefined` if none exist.
  */
-function isOpaqueType(typeName: string, schema: { get: (name: string) => SchemaType | undefined }): boolean {
-  if (opaqueTypes.has(typeName)) return true;
+function resolveCustomFields(resolvedType: unknown, parentName: string) {
+  if (!hasFieldsArray(resolvedType)) return undefined;
 
-  const parent: unknown = schema.get(typeName)?.type;
+  const inherited = inheritedFieldNames[parentName];
 
-  return isDefined(parent) && typeof parent === "object" && "name" in parent && opaqueTypes.has(String(parent.name));
+  const customFields = resolvedType.fields
+    .map((field: unknown) => normaliseField(field))
+    .filter((field) => inherited === undefined || !inherited.has(field.name));
+
+  return isDefined(customFields) ? customFields : undefined;
 }
 
 /**
- * Filters out opaque types from a list of field definitions, returning `undefined` if none remain.
+ * Normalises a list of raw field values into FieldDefinition-compatible shapes.
  *
- * @param fields - The field definitions to filter.
- * @param schema - The Sanity schema registry.
- * @returns The filtered fields, or `undefined` if all are opaque.
+ * @param items - Raw field values to normalise.
+ * @returns The normalised fields, or `undefined` if none exist.
  */
-function filterOpaque(
-  fields: FieldDefinition[],
-  schema: { get: (name: string) => SchemaType | undefined },
-): FieldDefinition[] | undefined {
-  const filtered = fields.filter((subfield) => !isOpaqueType(subfield.type, schema));
+function resolveNormalisedFields(items: unknown[]) {
+  const normalised = items.map((item) => normaliseField(item));
 
-  return isDefined(filtered) ? filtered : undefined;
+  return isDefined(normalised) ? normalised : undefined;
 }
 
 /**
- * Normalises and filters a list of raw field or member values, removing opaque types.
+ * Normalises array members and filters out opaque types that have no meaningful subfields.
  *
- * @param items - Raw field or member values to normalise.
- * @param schema - The Sanity schema registry.
- * @returns The normalised non-opaque fields, or `undefined` if none remain.
+ * @param members - Raw array member values to normalise.
+ * @returns The normalised non-opaque members, or `undefined` if none remain.
  */
-function resolveNormalisedFields(
-  items: unknown[],
-  schema: { get: (name: string) => SchemaType | undefined },
-): FieldDefinition[] | undefined {
-  return filterOpaque(
-    items.map((item) => normaliseField(item)),
-    schema,
-  );
+function resolveNormalisedMembers(members: unknown[]) {
+  const normalised = members.map((member) => normaliseField(member)).filter((member) => !isOpaqueType(member.type));
+
+  return isDefined(normalised) ? normalised : undefined;
+}
+
+/**
+ * Resolves the parent type name from a value, trying direct extraction first
+ * and falling back to a schema lookup for normalised values with string types.
+ *
+ * @param value - The value to inspect.
+ * @param schema - The Sanity schema registry.
+ * @returns The parent type name, or `undefined`.
+ */
+function resolveParentName(value: unknown, schema: { get: (name: string) => SchemaType | undefined }) {
+  const direct = getParentTypeName(value);
+  if (isDefined(direct)) return direct;
+
+  const typeName = getTypeName(value);
+  if (!isDefined(typeName)) return undefined;
+
+  const resolvedType = schema.get(typeName);
+  return isDefined(resolvedType) ? getParentTypeName(resolvedType) : undefined;
 }
 
 /**
@@ -179,25 +268,35 @@ function resolveNormalisedFields(
  * @param schema - The Sanity schema registry.
  * @returns The resolved fields, or `undefined` if the value has none.
  */
-function resolveFields(
-  value: unknown,
-  schema: { get: (name: string) => SchemaType | undefined },
-): FieldDefinition[] | undefined {
-  if (hasFieldsArray(value)) return resolveNormalisedFields(value.fields, schema);
+function resolveFields(value: unknown, schema: { get: (name: string) => SchemaType | undefined }) {
+  if (hasFieldsArray(value)) {
+    const parentName = resolveParentName(value, schema);
+    if (isDefined(parentName) && isOpaqueType(parentName)) return resolveCustomFields(value, parentName);
+
+    return resolveNormalisedFields(value.fields);
+  }
 
   if (hasOfArray(value)) {
     const members = value.of;
 
     if (members.length === 1) {
       const [member] = members;
-      if (hasFieldsArray(member)) return resolveNormalisedFields(member.fields, schema);
+      const normalised = normaliseField(member);
 
-      const memberTypeName = getTypeName(member);
-      const memberType = isDefined(memberTypeName) ? schema.get(memberTypeName) : undefined;
-      if (memberType && hasFieldsArray(memberType)) return resolveNormalisedFields(memberType.fields, schema);
+      if (isOpaqueType(normalised.type)) return undefined;
+
+      if (hasFieldsArray(normalised)) {
+        const parentName = resolveParentName(normalised, schema);
+        if (isDefined(parentName) && isOpaqueType(parentName)) return resolveCustomFields(normalised, parentName);
+
+        return resolveNormalisedFields(normalised.fields);
+      }
+
+      const memberType = schema.get(normalised.type);
+      if (isDefined(memberType)) return resolveFields(memberType, schema);
     }
 
-    return resolveNormalisedFields(members, schema);
+    return resolveNormalisedMembers(members);
   }
 
   return undefined;
@@ -210,11 +309,8 @@ function resolveFields(
  * @param schema - The Sanity schema registry.
  * @returns The non-opaque subfields, or `undefined` if the field has none.
  */
-function getSubfields(
-  field: FieldDefinition,
-  schema: { get: (name: string) => SchemaType | undefined },
-): FieldDefinition[] | undefined {
-  if (isOpaqueType(field.type, schema)) return undefined;
+function getSubfields(field: FieldDefinition, schema: { get: (name: string) => SchemaType | undefined }) {
+  if (isOpaqueType(field.type)) return undefined;
 
   const directFields = resolveFields(field, schema);
   if (directFields !== undefined) return directFields;
@@ -222,24 +318,12 @@ function getSubfields(
   const resolvedType = schema.get(field.type);
   if (!isDefined(resolvedType)) return undefined;
 
-  return resolveFields(resolvedType, schema);
-}
+  const parentName = getParentTypeName(resolvedType);
+  if (isDefined(parentName) && isOpaqueType(parentName)) {
+    return resolveCustomFields(resolvedType, parentName);
+  }
 
-interface FieldHintProps {
-  /** Accessible label and popover heading. */
-  label: string;
-  /** Icon element displayed on the hint button. */
-  icon: ReactNode;
-  /** CSS color applied to the hint icon. */
-  color: string;
-  /** Whether the popover is currently visible. */
-  open: boolean;
-  /** Text content displayed inside the popover. */
-  children: string;
-  /** Callback to toggle popover visibility. */
-  onToggle: () => void;
-  /** Callback to close the popover. */
-  onClose: () => void;
+  return resolveFields(resolvedType, schema);
 }
 
 function FieldHint({ label, icon, color, open, children, onToggle, onClose }: FieldHintProps) {
@@ -294,10 +378,64 @@ function FieldHint({ label, icon, color, open, children, onToggle, onClose }: Fi
   );
 }
 
-export function Field({ field, depth = 0 }: FieldProps) {
+function FieldHints({ tip, info, caution }: { tip?: string; info?: string; caution?: string }) {
+  const [openHint, setOpenHint] = useState<string | null>(null);
+
+  const closeHint = useCallback(() => {
+    setOpenHint(null);
+  }, []);
+
+  return (
+    <Flex align="center" gap={2}>
+      {isDefined(tip) && (
+        <FieldHint
+          label="Tip"
+          icon={<LightbulbIcon {...defaultIconProps} />}
+          color="var(--card-icon-color)"
+          open={openHint === "tip"}
+          onToggle={() => {
+            setOpenHint(openHint === "tip" ? null : "tip");
+          }}
+          onClose={closeHint}
+        >
+          {tip}
+        </FieldHint>
+      )}
+      {isDefined(info) && (
+        <FieldHint
+          label="Information"
+          icon={<InfoIcon {...defaultIconProps} />}
+          color="var(--card-icon-color)"
+          open={openHint === "info"}
+          onToggle={() => {
+            setOpenHint(openHint === "info" ? null : "info");
+          }}
+          onClose={closeHint}
+        >
+          {info}
+        </FieldHint>
+      )}
+      {isDefined(caution) && (
+        <FieldHint
+          label="Caution"
+          icon={<TriangleAlertIcon {...defaultIconProps} />}
+          color="var(--card-icon-color)"
+          open={openHint === "caution"}
+          onToggle={() => {
+            setOpenHint(openHint === "caution" ? null : "caution");
+          }}
+          onClose={closeHint}
+        >
+          {caution}
+        </FieldHint>
+      )}
+    </Flex>
+  );
+}
+
+export function Field({ field, depth = 0, ancestors = new Set() }: FieldProps) {
   const schema = useSchema();
   const [expanded, setExpanded] = useState(false);
-  const [openHint, setOpenHint] = useState<string | null>(null);
 
   const effectiveTitle = field.handbook?.title ?? field.title ?? (field.name && convertCase(field.name, "title"));
   const effectiveDescription = field.handbook?.description ?? field.description ?? defaultFieldDescription;
@@ -305,12 +443,9 @@ export function Field({ field, depth = 0 }: FieldProps) {
   const { example, tip, info, caution } = field.handbook ?? {};
   const hasHints = isDefined([tip, info, caution]);
 
-  const subfields = getSubfields(field, schema);
+  const isCycle = ancestors.has(field.type);
+  const subfields = isCycle ? undefined : getSubfields(field, schema);
   const hasSubfields = isDefined(subfields);
-
-  const closeHint = useCallback(() => {
-    setOpenHint(null);
-  }, []);
 
   return (
     <Stack space={2}>
@@ -326,52 +461,7 @@ export function Field({ field, depth = 0 }: FieldProps) {
               </Text>
             </Flex>
           </Box>
-          {hasHints && (
-            <Flex align="center" gap={2}>
-              {isDefined(tip) && (
-                <FieldHint
-                  label="Tip"
-                  icon={<LightbulbIcon {...defaultIconProps} />}
-                  color="var(--card-icon-color)"
-                  open={openHint === "tip"}
-                  onToggle={() => {
-                    setOpenHint(openHint === "tip" ? null : "tip");
-                  }}
-                  onClose={closeHint}
-                >
-                  {tip}
-                </FieldHint>
-              )}
-              {isDefined(info) && (
-                <FieldHint
-                  label="Information"
-                  icon={<InfoIcon {...defaultIconProps} />}
-                  color="var(--card-icon-color)"
-                  open={openHint === "info"}
-                  onToggle={() => {
-                    setOpenHint(openHint === "info" ? null : "info");
-                  }}
-                  onClose={closeHint}
-                >
-                  {info}
-                </FieldHint>
-              )}
-              {isDefined(caution) && (
-                <FieldHint
-                  label="Caution"
-                  icon={<TriangleAlertIcon {...defaultIconProps} />}
-                  color="var(--card-icon-color)"
-                  open={openHint === "caution"}
-                  onToggle={() => {
-                    setOpenHint(openHint === "caution" ? null : "caution");
-                  }}
-                  onClose={closeHint}
-                >
-                  {caution}
-                </FieldHint>
-              )}
-            </Flex>
-          )}
+          {hasHints && <FieldHints tip={tip} info={info} caution={caution} />}
         </Flex>
         {isDefined(effectiveDescription) && (
           <Text size={1} muted>
@@ -386,8 +476,15 @@ export function Field({ field, depth = 0 }: FieldProps) {
           </Box>
         )}
       </Stack>
+      {isCycle && (
+        <Box marginTop={2}>
+          <Text size={1} muted style={{ fontStyle: "italic" }}>
+            See {convertCase(field.type, "title")} above.
+          </Text>
+        </Box>
+      )}
       {hasSubfields && (
-        <Box marginTop={4}>
+        <>
           <Card
             as="button"
             padding={3}
@@ -396,7 +493,7 @@ export function Field({ field, depth = 0 }: FieldProps) {
             onClick={() => {
               setExpanded(!expanded);
             }}
-            style={{ width: "100%", textAlign: "left", border: "none", cursor: "pointer" }}
+            style={{ width: "100%", marginTop: "1rem", textAlign: "left", border: "none", cursor: "pointer" }}
           >
             <Flex align="center" gap={2}>
               <Text size={0}>{expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}</Text>
@@ -406,13 +503,27 @@ export function Field({ field, depth = 0 }: FieldProps) {
             </Flex>
           </Card>
           {expanded && (
-            <Stack space={5} paddingTop={4} paddingBottom={2} paddingLeft={4}>
-              {subfields.map((subfield) => (
-                <Field key={subfield.name} field={subfield} depth={depth + 1} />
-              ))}
-            </Stack>
+            <div
+              style={{
+                marginTop: "16px",
+                marginBottom: "8px",
+                paddingLeft: "16px",
+                borderLeft: "1px solid var(--card-border-color)",
+              }}
+            >
+              <Stack space={5}>
+                {subfields.map((subfield) => (
+                  <Field
+                    key={subfield.name}
+                    field={subfield}
+                    depth={depth + 1}
+                    ancestors={new Set([...ancestors, field.type])}
+                  />
+                ))}
+              </Stack>
+            </div>
           )}
-        </Box>
+        </>
       )}
     </Stack>
   );
