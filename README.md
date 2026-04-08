@@ -51,13 +51,12 @@ export default defineConfig({
       groups: [
         {
           title: "Singletons",
-          description: "Unique pages that exist as a single instance and cannot be duplicated.",
+          description: "Document types that exist as a single instance.",
           documents: [home, work, latest],
         },
         {
           title: "Collections",
-          description:
-            "Repeatable document types with multiple entries, each representing an individually routable page.",
+          description: "Document types with multiple entries.",
           documents: [page, caseStudy, article],
         },
       ],
@@ -83,7 +82,7 @@ This registers a Handbook tool in the Studio navigation. Opening it displays a s
 
 ## Handbook Metadata
 
-The plugin augments Sanity's `FieldDefinitionBase` and `DocumentDefinition` interfaces, adding a `handbook` property that TypeScript recognises automatically. Fields fall back to their standard `title` and `description` properties when no `handbook` metadata is provided.
+The plugin augments Sanity's `FieldDefinitionBase` and `DocumentDefinition` interfaces, adding a `handbook` property that TypeScript recognises automatically.
 
 ```typescript
 import { defineField, defineType } from "sanity";
@@ -103,7 +102,7 @@ export const pageType = defineType({
       type: "string",
       description: "The primary heading displayed on this page.",
       handbook: {
-        example: "About Acme Inc.",
+        example: "Acme Inc.",
         tip: "Keep titles concise — under 60 characters for best results.",
         info: "The title is also used to generate the page's URL slug.",
         caution:
@@ -185,7 +184,7 @@ const exampleSchema = defineType({
 });
 
 function ExampleBlock({ value }: { value: PortableTextObject & { label?: string } }) {
-  return <div>{value.label}</div>;
+  return <p>{value.label}</p>;
 }
 
 export default defineConfig({
@@ -227,19 +226,6 @@ const isEditor = useIsHandbookEditor(["editor@acme.com"]);
 
 To add handbook documents to the Structure tool sidebar, use the `handbookStructure` helper. This adds a Handbook singleton editor and a Handbook Guides list. The structure helper respects the same editor permissions configured via the plugin.
 
-<br />
-
-<figure>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-structure-dark.png" />
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-structure.png" />
-    <img src="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-structure.png" alt="The Handbook singleton editor in the Structure tool, showing reorderable groups each containing guide references" />
-  </picture>
-  <p align="center"><sub><em>The Handbook singleton where groups and their ordering are managed.</em></sub></p>
-</figure>
-
-<br />
-
 ```typescript
 import { handbookStructure } from "@driftime/sanity-plugin-handbook";
 
@@ -257,7 +243,22 @@ export const structure = (structureBuilder, context) => {
 };
 ```
 
-Individual guides are authored as `handbook.guide` documents, which can be created and edited directly from the Structure tool.
+The Handbook singleton is where you define guide groups and their ordering. Each group contains references to individual guide documents that editors can reorder as needed.
+
+<br />
+
+<figure>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-structure-dark.png" />
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-structure.png" />
+    <img src="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/handbook-structure.png" alt="The Handbook singleton editor in the Structure tool, showing reorderable groups each containing guide references" />
+  </picture>
+  <p align="center"><sub><em>The Handbook singleton where groups and their ordering are managed.</em></sub></p>
+</figure>
+
+<br />
+
+Individual guides are authored as `handbook.guide` documents, which can be created and edited directly from the Structure tool using the built-in Portable Text editor.
 
 <br />
 
