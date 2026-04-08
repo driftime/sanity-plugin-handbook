@@ -5,18 +5,13 @@ import { PaneHeader } from "../components/pane-header";
 import { HandbookProvider, useHandbookContext } from "../contexts/handbook-context";
 import { useContainerWidth } from "../hooks/use-container-width";
 import { isDefined } from "../lib/utils";
-import type { HandbookBlockDefinition, HandbookStructureGroup } from "../types";
+import type { HandbookConfig } from "../types";
 import { Content } from "./content";
 import { Sidebar } from "./sidebar";
 
-interface HandbookToolConfig {
-  /** Heading displayed at the top of the sidebar. */
-  sidebarTitle?: string;
-  /** Document type groups containing document definitions. */
-  groups?: HandbookStructureGroup[];
-  /** Custom block definitions registered by the consumer. */
-  blocks?: HandbookBlockDefinition[];
-}
+/** Default fallback message shown when a field has no description. */
+const defaultUndocumentedFieldMessage =
+  "This field has not been documented yet. Contact your development team for guidance.";
 
 /** Minimum container width for the wide (sidebar always visible) layout. */
 const wideBreakpoint = 920;
@@ -194,13 +189,14 @@ function HandbookLayout() {
  * @param config - Handbook plugin configuration.
  * @returns Tool component for Sanity Studio.
  */
-export function createHandbookTool(config: HandbookToolConfig) {
+export function createHandbookTool(config: HandbookConfig) {
   return function HandbookTool() {
     return (
       <HandbookProvider
         sidebarTitle={config.sidebarTitle ?? "Handbook"}
         groups={config.groups ?? []}
         blocks={config.blocks ?? []}
+        undocumentedFieldMessage={config.undocumentedFieldMessage ?? defaultUndocumentedFieldMessage}
       >
         <HandbookLayout />
       </HandbookProvider>

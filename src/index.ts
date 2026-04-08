@@ -138,11 +138,7 @@ export function handbookPlugin(config?: HandbookConfig) {
         name: "handbook",
         title: config?.title ?? "Handbook",
         icon: createSanityIcon(BookTextIcon),
-        component: createHandbookTool({
-          sidebarTitle: config?.sidebarTitle,
-          groups: config?.groups,
-          blocks: customBlocks,
-        }),
+        component: createHandbookTool({ ...config, blocks: customBlocks }),
       },
     ],
   }))();

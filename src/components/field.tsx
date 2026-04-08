@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import type { FieldDefinition, SchemaType } from "sanity";
 import { useSchema } from "sanity";
 
+import { useHandbookContext } from "../contexts/handbook-context";
 import { defaultIconProps } from "../lib/icons";
 import { convertCase, isDefined } from "../lib/utils";
 
@@ -78,10 +79,6 @@ const inheritedFieldNames: Partial<Record<string, Set<string>>> = {
   image: new Set(["asset", "crop", "hotspot", "media"]),
   slug: new Set(["current", "source"]),
 };
-
-/** Fallback description shown when a schema field has no description defined. */
-const defaultFieldDescription =
-  "No description has been added for this field. Please consult your developer(s) to update your Handbook.";
 
 /**
  * Type guard that checks whether a value is a compiled schema field with a nested type object.
@@ -435,10 +432,11 @@ function FieldHints({ tip, info, caution }: { tip?: string; info?: string; cauti
 
 export function Field({ field, depth = 0, ancestors = new Set() }: FieldProps) {
   const schema = useSchema();
+  const { undocumentedFieldMessage } = useHandbookContext();
   const [expanded, setExpanded] = useState(false);
 
   const effectiveTitle = field.handbook?.title ?? field.title ?? (field.name && convertCase(field.name, "title"));
-  const effectiveDescription = field.handbook?.description ?? field.description ?? defaultFieldDescription;
+  const effectiveDescription = field.handbook?.description ?? field.description ?? undocumentedFieldMessage;
 
   const { example, tip, info, caution } = field.handbook ?? {};
   const hasHints = isDefined([tip, info, caution]);

@@ -64,6 +64,8 @@ export interface HandbookConfig {
   blocks?: HandbookBlockDefinition[];
   /** Email addresses permitted to edit handbook documents. */
   editors?: string[];
+  /** Fallback message shown when a field has no description. */
+  undocumentedFieldMessage?: string;
 }
 
 /** @public */

@@ -5,41 +5,46 @@ import { useHandbookConfiguration } from "../hooks/use-handbook-configuration";
 import { isDefined } from "../lib/utils";
 import type { HandbookBlockDefinition, HandbookStructureGroup, SanityHandbook } from "../types";
 
-interface HandbookContextValues {
+interface HandbookProviderConfig {
   /** Heading displayed at the top of the sidebar. */
   sidebarTitle: string;
+  /** Configured document type groups containing document definitions. */
+  groups: HandbookStructureGroup[];
+  /** Custom block definitions registered by the consumer. */
+  blocks: HandbookBlockDefinition[];
+  /** Fallback message shown when a field has no description. */
+  undocumentedFieldMessage: string;
+}
+
+interface HandbookContextValues extends HandbookProviderConfig {
   /** Identifier of the currently selected tab, or null if none. */
   activeTab: string | null;
   /** Whether the sidebar is currently expanded. */
   sidebarExpanded: boolean;
   /** Whether configuration data is still loading from the dataset. */
   loading: boolean;
-  /** Configured document type groups containing document definitions. */
-  groups: HandbookStructureGroup[];
   /** Handbook configuration singleton fetched from the dataset. */
   configuration: SanityHandbook | null;
-  /** Custom block definitions registered by the consumer. */
-  blocks: HandbookBlockDefinition[];
   /** Sets the active tab by identifier. */
   setActiveTab: (id: string) => void;
   /** Toggles the sidebar expanded state. */
   setSidebarExpanded: (expanded: boolean) => void;
 }
 
-interface HandbookProviderProps {
-  /** Heading displayed at the top of the sidebar. */
-  sidebarTitle: string;
-  /** Document type groups containing document definitions. */
-  groups: HandbookStructureGroup[];
-  /** Custom block definitions registered by the consumer. */
-  blocks: HandbookBlockDefinition[];
+interface HandbookProviderProps extends HandbookProviderConfig {
   /** Child elements wrapped by the provider. */
   children: ReactNode;
 }
 
 const HandbookContext = createContext<HandbookContextValues | undefined>(undefined);
 
-export function HandbookProvider({ sidebarTitle, groups, blocks, children }: HandbookProviderProps) {
+export function HandbookProvider({
+  sidebarTitle,
+  groups,
+  blocks,
+  undocumentedFieldMessage,
+  children,
+}: HandbookProviderProps) {
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const { configuration, loading } = useHandbookConfiguration();
@@ -54,6 +59,7 @@ export function HandbookProvider({ sidebarTitle, groups, blocks, children }: Han
         groups,
         configuration,
         blocks,
+        undocumentedFieldMessage,
         setActiveTab,
         setSidebarExpanded,
       }}
