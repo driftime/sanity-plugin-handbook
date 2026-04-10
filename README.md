@@ -1,5 +1,3 @@
-<br />
-
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/icon-dark.svg" />
