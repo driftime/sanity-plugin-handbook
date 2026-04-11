@@ -45,10 +45,10 @@ export default defineConfig({
     // Type declarations are side-effect imports.
     "import/no-unassigned-import": ["error", { allow: ["**/*.d.ts"] }],
 
-    // Sanity plugin conventions require default exports in config files.
+    // Sanity plugin conventions require default exports.
     "import/no-default-export": "off",
 
-    // Plugin build tooling uses Node.js builtins.
+    // Build tooling legitimately uses Node.js builtins.
     "import/no-nodejs-modules": "off",
 
     // Named exports enable tree shaking and explicit imports.
@@ -72,7 +72,7 @@ export default defineConfig({
     // Naming conventions are enforced through code review, not arbitrary length limits.
     "id-length": "off",
 
-    // TypeScript infers return types reliably; this is a plugin, not a deeply nested library boundary.
+    // TypeScript infers return types reliably, and this is a plugin, not a published library.
     "explicit-module-boundary-types": "off",
 
     // Debug logging should not ship to production, but intentional logging is part of the application.
@@ -151,7 +151,7 @@ export default defineConfig({
     // Oxfmt owns declaration ordering; the linter only needs to enforce member ordering.
     "sort-imports": ["error", { ignoreDeclarationSort: true }],
 
-    // Semantic grouping in component props is more meaningful than alphabetical order.
+    // Semantic grouping in schemas and component props is more meaningful than alphabetical order.
     "sort-keys": "off",
   },
 });

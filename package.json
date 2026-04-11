@@ -8,7 +8,8 @@
   ],
   "homepage": "https://github.com/driftime/sanity-plugin-handbook",
   "bugs": {
-    "url": "https://github.com/driftime/sanity-plugin-handbook/issues"
+    "url": "https://github.com/driftime/sanity-plugin-handbook/issues",
+    "email": "kenny@driftime.com"
   },
   "license": "MIT",
   "author": {
@@ -53,7 +54,7 @@
     "fix": "oxfmt && oxlint --fix",
     "dev": "plugin-kit link-watch",
     "watch": "pkg-utils watch --strict",
-    "build": "plugin-kit verify-package --silent && pkg-utils build --strict --clean --check"
+    "build": "bun run fix && plugin-kit verify-package --silent && pkg-utils build --strict --clean --check"
   },
   "devDependencies": {
     "@sanity/browserslist-config": "1.0.5",
