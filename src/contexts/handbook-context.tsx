@@ -17,8 +17,8 @@ interface HandbookProviderConfig {
 }
 
 interface HandbookContextValues extends HandbookProviderConfig {
-  /** Identifier of the currently selected tab, or null if none. */
-  activeTab: string | null;
+  /** Identifier of the currently selected tab, or undefined if none. */
+  activeTab: string | undefined;
   /** Whether the sidebar is currently expanded. */
   sidebarExpanded: boolean;
   /** Whether configuration data is still loading from the dataset. */
@@ -45,7 +45,7 @@ export function HandbookProvider({
   undocumentedFieldMessage,
   children,
 }: HandbookProviderProps) {
-  const [activeTab, setActiveTab] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const { configuration, loading } = useHandbookConfiguration();
 
@@ -53,13 +53,13 @@ export function HandbookProvider({
     <HandbookContext
       value={{
         sidebarTitle,
+        groups,
+        blocks,
+        undocumentedFieldMessage,
         activeTab,
         sidebarExpanded,
         loading,
-        groups,
         configuration,
-        blocks,
-        undocumentedFieldMessage,
         setActiveTab,
         setSidebarExpanded,
       }}

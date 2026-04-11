@@ -378,10 +378,10 @@ function FieldHint({ label, icon, color, open, children, onToggle, onClose }: Fi
 }
 
 function FieldHints({ tip, info, caution }: { tip?: string; info?: string; caution?: string }) {
-  const [openHint, setOpenHint] = useState<string | null>(null);
+  const [openHint, setOpenHint] = useState<string | undefined>(undefined);
 
   const closeHint = useCallback(() => {
-    setOpenHint(null);
+    setOpenHint(undefined);
   }, []);
 
   return (
@@ -393,7 +393,7 @@ function FieldHints({ tip, info, caution }: { tip?: string; info?: string; cauti
           color="var(--card-icon-color)"
           open={openHint === "tip"}
           onToggle={() => {
-            setOpenHint(openHint === "tip" ? null : "tip");
+            setOpenHint(openHint === "tip" ? undefined : "tip");
           }}
           onClose={closeHint}
         >
@@ -407,7 +407,7 @@ function FieldHints({ tip, info, caution }: { tip?: string; info?: string; cauti
           color="var(--card-icon-color)"
           open={openHint === "info"}
           onToggle={() => {
-            setOpenHint(openHint === "info" ? null : "info");
+            setOpenHint(openHint === "info" ? undefined : "info");
           }}
           onClose={closeHint}
         >
@@ -421,7 +421,7 @@ function FieldHints({ tip, info, caution }: { tip?: string; info?: string; cauti
           color="var(--card-icon-color)"
           open={openHint === "caution"}
           onToggle={() => {
-            setOpenHint(openHint === "caution" ? null : "caution");
+            setOpenHint(openHint === "caution" ? undefined : "caution");
           }}
           onClose={closeHint}
         >
