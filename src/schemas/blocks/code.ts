@@ -1,31 +1,50 @@
 import { defineField, defineType } from "sanity";
+import type { PortableTextObject } from "sanity";
 
-import { CodePreview } from "../../blocks/code/preview";
-import { CodeIcon } from "../../icons/code";
-import { createSanityIcon } from "../../lib/icons";
+import { CodePreview } from "@/blocks/code/preview";
+import { CodeIcon } from "@/icons/code";
+import { createSanityIcon } from "@/lib/icons";
+import type { Strict } from "@/types";
 
-export const handbookCodeType = defineType({
-  name: "handbook.code",
-  title: "Code",
+/**
+ * A block of source code, rendered with syntax highlighting for its language.
+ *
+ * @public
+ */
+export type SanityHandbookCode = Strict<PortableTextObject> & {
+  _type: typeof codeTypeName;
+  /** Source code to display. */
+  code?: string;
+  /** Programming language used for syntax highlighting. */
+  language?: string;
+};
+
+/** Type name of the code block. */
+export const codeTypeName = "handbook.code";
+
+export const codeType = defineType({
+  name: codeTypeName satisfies SanityHandbookCode["_type"],
   type: "object",
+  title: "Code",
   icon: createSanityIcon(CodeIcon),
-  description: "A syntax-highlighted code block with language selection.",
-  preview: {
-    select: { code: "code", language: "language" },
-  },
+  description: "Syntax-highlighted code block with language selection.",
   components: {
     preview: CodePreview,
   },
+  preview: {
+    select: {
+      code: "code",
+      language: "language",
+    },
+  },
   fields: [
     defineField({
-      name: "code",
-      title: "Code",
+      name: "code" satisfies keyof SanityHandbookCode,
       type: "text",
       description: "The source code to display.",
     }),
     defineField({
-      name: "language",
-      title: "Language",
+      name: "language" satisfies keyof SanityHandbookCode,
       type: "string",
       description: "Programming language used for syntax highlighting.",
       options: {

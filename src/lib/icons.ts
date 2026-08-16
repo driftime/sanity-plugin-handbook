@@ -1,16 +1,21 @@
-import type { ComponentType, SVGProps } from "react";
+import type { ComponentProps, ComponentType } from "react";
 import { createElement } from "react";
 
-/** Default properties applied to all icons throughout the plugin. */
-export const defaultIconProps: SVGProps<SVGSVGElement> = { width: "1em", height: "1em", strokeWidth: 1.5 };
+import { defaultIconProps } from "@/config/defaults";
 
 /**
- * Creates a Sanity Studio icon component from an SVG icon with default props applied.
+ * Creates a Sanity Studio icon component from an SVG icon.
  *
  * @param icon - The icon component to wrap.
- * @param props - Optional props to merge with defaults.
- * @returns A React component function for use in Sanity Studio.
+ * @param props - Additional props merged over the default properties a Studio icon is drawn with.
+ * @returns A Studio icon component.
  */
-export function createSanityIcon(icon: ComponentType<SVGProps<SVGSVGElement>>, props?: SVGProps<SVGSVGElement>) {
-  return () => createElement(icon, { ...defaultIconProps, ...props });
+export function createSanityIcon(icon: ComponentType<ComponentProps<"svg">>, props?: ComponentProps<"svg">) {
+  const Icon = icon;
+
+  function SanityIcon() {
+    return createElement(Icon, { ...defaultIconProps, ...props });
+  }
+
+  return SanityIcon;
 }

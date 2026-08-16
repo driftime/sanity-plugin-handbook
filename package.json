@@ -22,69 +22,70 @@
     "url": "git+ssh://git@github.com/driftime/sanity-plugin-handbook.git"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "type": "module",
   "sideEffects": false,
-  "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "source": "./src/index.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
       "default": "./dist/index.js"
     },
     "./package.json": "./package.json"
   },
   "publishConfig": {
-    "access": "public",
     "exports": {
-      ".": {
-        "import": "./dist/index.js",
-        "require": "./dist/index.cjs",
-        "default": "./dist/index.js"
-      },
+      ".": "./dist/index.js",
       "./package.json": "./package.json"
-    }
+    },
+    "access": "public"
   },
   "scripts": {
+    "typecheck": "tsc",
     "check": "oxfmt --check && oxlint",
     "fix": "oxfmt && oxlint --fix",
     "dev": "plugin-kit link-watch",
     "watch": "pkg-utils watch --strict",
-    "build": "bun run fix && plugin-kit verify-package --silent && pkg-utils build --strict --clean --check"
+    "build": "bun run check && bun run typecheck && plugin-kit verify-package --silent && pkg-utils build --strict --check --clean && node --check dist/index.js",
+    "prepublishOnly": "bun run build"
+  },
+  "dependencies": {
+    "@portabletext/react": "^8.0.0",
+    "@sanity/icons": "^5.2.1",
+    "@sanity/ui": "^4.0.3"
   },
   "devDependencies": {
     "@sanity/browserslist-config": "1.0.5",
-    "@sanity/pkg-utils": "10.4.13",
-    "@sanity/plugin-kit": "4.0.20",
-    "@sanity/ui": "3.1.14",
-    "@types/node": "25.5.2",
-    "@types/react": "19.2.14",
-    "oxfmt": "0.44.0",
-    "oxlint": "1.59.0",
-    "oxlint-tsgolint": "0.20.0",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "sanity": "5.20.0",
-    "typescript": "6.0.2"
+    "@sanity/pkg-utils": "12.1.2",
+    "@sanity/plugin-kit": "10.0.5",
+    "@sanity/tsconfig": "2.2.1",
+    "@types/node": "26.2.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "babel-plugin-react-compiler": "1.0.0",
+    "oxfmt": "0.63.0",
+    "oxlint": "1.78.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "sanity": "6.9.2",
+    "typescript": "7.0.2"
   },
   "peerDependencies": {
-    "@sanity/ui": "2 || 3",
-    "react": "18 || 19",
-    "sanity": "3 || 4 || 5"
+    "react": "19",
+    "sanity": "6"
   },
   "browserslist": "extends @sanity/browserslist-config",
   "engines": {
-    "node": ">=18"
+    "node": ">=20.19 <22 || >=22.12"
   },
   "sanityPlugin": {
     "verifyPackage": {
-      "sanityV2Json": false,
-      "eslintImports": false,
-      "scripts": false
+      "tsconfig": false,
+      "scripts": false,
+      "oxlint": false,
+      "oxfmt": false
     }
   }
 }

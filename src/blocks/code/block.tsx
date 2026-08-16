@@ -1,18 +1,23 @@
-import { CodeContent } from "./content";
+import type { ComponentProps } from "react";
 
-interface HandbookCodeValue {
-  /** Document type identifier. */
-  _type: "handbook.code";
-  /** Source code to display. */
-  code: string;
-  /** Programming language for syntax highlighting. */
-  language?: string;
-}
+import { CodeContent } from "@/blocks/code/content";
+import { contentSpacing } from "@/config/layout";
+import { isDefined } from "@/lib/utils";
+import type { SanityHandbookCode } from "@/schemas/blocks/code";
 
-export function CodeBlock({ value }: { value: HandbookCodeValue }) {
+export type CodeBlockProps = Omit<ComponentProps<typeof CodeContent>, "code" | "language"> & {
+  value: SanityHandbookCode;
+};
+
+export function CodeBlock({ value, style, ...props }: CodeBlockProps) {
+  if (!isDefined(value.code)) return null;
+
   return (
-    <div style={{ marginBlock: "1.5rem" }}>
-      <CodeContent code={value.code} language={value.language} />
-    </div>
+    <CodeContent
+      code={value.code}
+      language={value.language}
+      style={{ marginBlock: contentSpacing.media, ...style }}
+      {...props}
+    />
   );
 }

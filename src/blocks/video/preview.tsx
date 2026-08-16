@@ -1,21 +1,15 @@
 import type { PreviewProps } from "sanity";
 
-import { isDefined } from "../../lib/utils";
-import { VideoContent } from "./content";
+import { VideoContent } from "@/blocks/video/content";
+import { isDefined } from "@/lib/utils";
 
-interface VideoPreviewProps extends PreviewProps {
-  /** Resolved video URL from the asset. */
+export type VideoPreviewProps = PreviewProps & {
   url?: string;
-  /** Text displayed beneath the video. */
   caption?: string;
-}
+};
 
 export function VideoPreview({ url, caption }: VideoPreviewProps) {
   if (!isDefined(url)) return null;
 
-  return (
-    <div style={{ padding: "0.5rem" }}>
-      <VideoContent url={url} caption={caption} />
-    </div>
-  );
+  return <VideoContent url={url} caption={caption} style={{ padding: 8 }} />;
 }

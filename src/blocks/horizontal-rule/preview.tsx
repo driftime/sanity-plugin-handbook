@@ -1,5 +1,9 @@
-import { HorizontalRuleContent } from "./content";
+import type { PreviewProps } from "sanity";
 
-export function HorizontalRulePreview() {
-  return <HorizontalRuleContent marginBlock="0.5rem" />;
+import { HorizontalRuleContent } from "@/blocks/horizontal-rule/content";
+
+export type HorizontalRulePreviewProps = PreviewProps;
+
+export function HorizontalRulePreview(_props: HorizontalRulePreviewProps) {
+  return <HorizontalRuleContent style={{ marginBlock: 8 }} />;
 }

@@ -1,21 +1,23 @@
-import { isDefined } from "../../lib/utils";
-import { VideoContent } from "./content";
+import type { ComponentProps } from "react";
 
-interface HandbookVideoValue {
-  /** Document type identifier. */
-  _type: "handbook.video";
-  /** Resolved video asset containing the URL. */
-  asset?: { url?: string };
-  /** Text displayed beneath the video. */
-  caption?: string;
-}
+import { VideoContent } from "@/blocks/video/content";
+import { contentSpacing } from "@/config/layout";
+import { isDefined } from "@/lib/utils";
+import type { SanityHandbookVideo } from "@/schemas/blocks/video";
 
-export function VideoBlock({ value }: { value: HandbookVideoValue }) {
+export type VideoBlockProps = Omit<ComponentProps<typeof VideoContent>, "url" | "caption"> & {
+  value: SanityHandbookVideo;
+};
+
+export function VideoBlock({ value, style, ...props }: VideoBlockProps) {
   if (!isDefined(value.asset?.url)) return null;
 
   return (
-    <div style={{ marginBlock: "1.5rem" }}>
-      <VideoContent url={value.asset.url} caption={value.caption} />
-    </div>
+    <VideoContent
+      url={value.asset.url}
+      caption={value.caption}
+      style={{ marginBlock: contentSpacing.media, ...style }}
+      {...props}
+    />
   );
 }

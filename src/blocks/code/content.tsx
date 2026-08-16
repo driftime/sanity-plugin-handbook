@@ -1,15 +1,15 @@
-import { Card, Code } from "@sanity/ui";
+import { Card } from "@sanity/ui";
+import type { CardProps } from "@sanity/ui";
+import { Code } from "@sanity/ui/code";
 
-interface CodeContentProps {
-  /** Source code to display. */
+export type CodeContentProps = CardProps & {
   code: string;
-  /** Programming language for syntax highlighting. */
   language?: string;
-}
+};
 
-export function CodeContent({ code, language }: CodeContentProps) {
+export function CodeContent({ code, language, style, ...props }: CodeContentProps) {
   return (
-    <Card padding={4} radius={2} tone="transparent" style={{ overflowX: "auto" }}>
+    <Card padding={4} radius={2} tone="transparent" style={{ overflowX: "auto", ...style }} {...props}>
       <Code size={1} language={language}>
         {code}
       </Code>

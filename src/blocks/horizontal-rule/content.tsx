@@ -1,8 +1,7 @@
-interface HorizontalRuleContentProps {
-  /** Vertical spacing above and below the rule. */
-  marginBlock?: string;
-}
+import type { ComponentProps } from "react";
 
-export function HorizontalRuleContent({ marginBlock = "0" }: HorizontalRuleContentProps) {
-  return <hr style={{ marginBlock, border: "none", borderTop: "1px solid var(--card-border-color)" }} />;
+export type HorizontalRuleContentProps = ComponentProps<"hr">;
+
+export function HorizontalRuleContent({ style, ...props }: HorizontalRuleContentProps) {
+  return <hr style={{ border: "none", borderTop: "1px solid var(--card-border-color)", ...style }} {...props} />;
 }

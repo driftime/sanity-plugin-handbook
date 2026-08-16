@@ -1,37 +1,24 @@
-import { Text } from "@sanity/ui";
+import type { ComponentProps } from "react";
 
-import { isDefined } from "../../lib/utils";
+import { Caption } from "@/components/caption";
+import { isDefined } from "@/lib/utils";
 
-interface VideoContentProps {
-  /** Video source URL. */
+export type VideoContentProps = ComponentProps<"div"> & {
   url: string;
-  /** Text displayed beneath the video. */
   caption?: string;
-}
+};
 
-export function VideoContent({ url, caption }: VideoContentProps) {
+export function VideoContent({ url, caption, ...props }: VideoContentProps) {
   return (
-    <>
+    <div {...props}>
       <video
         src={url}
         controls
-        style={{
-          display: "block",
-          maxWidth: "100%",
-          borderRadius: "0.25rem",
-          overflow: "hidden",
-          WebkitTransform: "translateZ(0)",
-        }}
+        style={{ display: "block", maxWidth: "100%", borderRadius: 4, WebkitTransform: "translateZ(0)" }}
       >
         <track kind="captions" label={caption ?? "Video"} />
       </video>
-      {isDefined(caption) && (
-        <div style={{ marginBlockStart: "0.75rem" }}>
-          <Text size={1} muted style={{ fontStyle: "italic" }}>
-            {caption}
-          </Text>
-        </div>
-      )}
-    </>
+      {isDefined(caption) && <Caption>{caption}</Caption>}
+    </div>
   );
 }

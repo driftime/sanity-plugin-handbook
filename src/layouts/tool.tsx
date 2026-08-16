@@ -1,205 +1,44 @@
-import { ArrowLeftIcon } from "@sanity/icons";
-import { Button, Card, Flex, Text } from "@sanity/ui";
+import { useTheme_v2 } from "@sanity/ui";
+import { useState } from "react";
+import type { Tool } from "sanity";
+import { PaneLayout } from "sanity/structure";
 
-import { PaneHeader } from "../components/pane-header";
-import { HandbookProvider, useHandbookContext } from "../contexts/handbook-context";
-import { useContainerWidth } from "../hooks/use-container-width";
-import { isDefined } from "../lib/utils";
-import type { HandbookConfig } from "../types";
-import { Content } from "./content";
-import { Sidebar } from "./sidebar";
+import { toolMinimumWidth } from "@/config/layout";
+import { HandbookProvider } from "@/contexts/handbook";
+import type { HandbookProviderConfig } from "@/contexts/handbook";
+import { Panes } from "@/layouts/panes";
+import { isDefined } from "@/lib/utils";
 
-/** Default fallback message shown when a field has no description. */
-const defaultUndocumentedFieldMessage =
-  "This field has not been documented yet. Contact your development team for guidance.";
-
-/** Minimum container width for the wide (sidebar always visible) layout. */
-const wideBreakpoint = 920;
-
-/** Minimum container width for the medium (collapsible sidebar) layout. */
-const narrowBreakpoint = 480;
-
-/** Sidebar width in pixels when fully expanded. */
-const sidebarWidth = 320;
-
-/** Sidebar width in pixels when collapsed to a vertical label. */
-const collapsedSidebarWidth = 51;
-
-function CollapsedSidebar() {
-  const { sidebarTitle, setSidebarExpanded } = useHandbookContext();
-
-  return (
-    <div
-      style={{
-        width: `${collapsedSidebarWidth}px`,
-        minWidth: `${collapsedSidebarWidth}px`,
-        overflow: "hidden",
-        borderRight: "1px solid var(--card-border-color)",
-      }}
-    >
-      <Card tone="inherit" data-collapsed="">
-        <Flex
-          direction="column"
-          padding={3}
-          onClick={() => {
-            setSidebarExpanded(true);
-          }}
-          style={{
-            width: "100vh",
-            boxSizing: "border-box",
-            transform: "rotate(90deg)",
-            transformOrigin: `calc(${collapsedSidebarWidth}px / 2)`,
-            cursor: "pointer",
-          }}
-        >
-          <Flex align="flex-start">
-            <Card flex={1} paddingLeft={2} padding={2}>
-              <Flex align="center" gap={1}>
-                <Text size={1} textOverflow="ellipsis" weight="semibold" style={{ cursor: "default", outline: "none" }}>
-                  {sidebarTitle}
-                </Text>
-              </Flex>
-            </Card>
-          </Flex>
-        </Flex>
-      </Card>
-    </div>
-  );
+export interface HandbookToolProps {
+  tool: Tool<HandbookProviderConfig>;
 }
 
-function NarrowContentHeader() {
-  const { sidebarTitle, setSidebarExpanded } = useHandbookContext();
+export function HandbookTool({ tool: { options } }: HandbookToolProps) {
+  const { media } = useTheme_v2();
+  const [layoutCollapsed, setLayoutCollapsed] = useState(false);
 
-  return (
-    <Flex align="center" gap={2} padding={3}>
-      <Button
-        icon={ArrowLeftIcon}
-        mode="bleed"
-        onClick={() => {
-          setSidebarExpanded(true);
-        }}
-      />
-      <Text size={1} weight="semibold">
-        {sidebarTitle}
-      </Text>
-    </Flex>
-  );
-}
-
-function ExpandedSidebar() {
-  const { sidebarTitle } = useHandbookContext();
-
-  return (
-    <Card
-      borderRight
-      style={{ display: "flex", flexDirection: "column", width: `${sidebarWidth}px`, minWidth: `${sidebarWidth}px` }}
-    >
-      <PaneHeader title={sidebarTitle} />
-      <div style={{ flex: 1, paddingBottom: "4px", overflowY: "auto" }}>
-        <Sidebar />
-      </div>
-    </Card>
-  );
-}
-
-function NarrowLayout() {
-  const { sidebarTitle, sidebarExpanded } = useHandbookContext();
-
-  if (sidebarExpanded) {
-    return (
-      <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-        <PaneHeader title={sidebarTitle} />
-        <div style={{ flex: 1, paddingBottom: "4px", overflowY: "auto" }}>
-          <Sidebar />
-        </div>
-      </div>
-    );
+  function handleCollapse() {
+    setLayoutCollapsed(true);
   }
 
-  return (
-    <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-      <NarrowContentHeader />
-      <Content />
-    </div>
-  );
-}
-
-function MediumLayout() {
-  const { sidebarExpanded, setSidebarExpanded } = useHandbookContext();
-
-  if (sidebarExpanded) {
-    return (
-      <Flex style={{ flex: 1 }}>
-        <ExpandedSidebar />
-        <Card
-          flex={1}
-          padding={3}
-          onClick={() => {
-            setSidebarExpanded(false);
-          }}
-          style={{ opacity: 0.4, overflowY: "auto", cursor: "pointer" }}
-        />
-      </Flex>
-    );
+  function handleExpand() {
+    setLayoutCollapsed(false);
   }
 
-  return (
-    <Flex style={{ flex: 1 }}>
-      <CollapsedSidebar />
-      <Card flex={1} style={{ display: "flex", flexDirection: "column" }}>
-        <Content />
-      </Card>
-    </Flex>
-  );
-}
-
-function WideLayout() {
-  return (
-    <Flex style={{ flex: 1 }}>
-      <ExpandedSidebar />
-      <Card flex={1} style={{ display: "flex", flexDirection: "column" }}>
-        <Content />
-      </Card>
-    </Flex>
-  );
-}
-
-function HandbookLayout() {
-  const { reference: containerReference, width: containerWidth } = useContainerWidth<HTMLDivElement>();
-
-  const isNarrow = isDefined(containerWidth) && containerWidth < narrowBreakpoint;
-  const isMedium = isDefined(containerWidth) && containerWidth >= narrowBreakpoint && containerWidth < wideBreakpoint;
-
-  function renderLayout() {
-    if (isNarrow) return <NarrowLayout />;
-    if (isMedium) return <MediumLayout />;
-    return <WideLayout />;
-  }
+  if (!isDefined(options)) return null;
 
   return (
-    <div ref={containerReference} style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      {renderLayout()}
-    </div>
-  );
-}
-
-/**
- * Creates the Handbook tool component bound to the given plugin configuration.
- *
- * @param config - Handbook plugin configuration.
- * @returns Tool component for Sanity Studio.
- */
-export function createHandbookTool(config: HandbookConfig) {
-  return function HandbookTool() {
-    return (
-      <HandbookProvider
-        sidebarTitle={config.sidebarTitle ?? "Handbook"}
-        groups={config.groups ?? []}
-        blocks={config.blocks ?? []}
-        undocumentedFieldMessage={config.undocumentedFieldMessage ?? defaultUndocumentedFieldMessage}
+    <HandbookProvider {...options}>
+      <PaneLayout
+        flex={1}
+        height={layoutCollapsed ? undefined : "fill"}
+        minWidth={media[1]}
+        onCollapse={handleCollapse}
+        onExpand={handleExpand}
+        style={{ minHeight: "100%", minWidth: `${toolMinimumWidth}px` }}
       >
-        <HandbookLayout />
-      </HandbookProvider>
-    );
-  };
+        <Panes />
+      </PaneLayout>
+    </HandbookProvider>
+  );
 }

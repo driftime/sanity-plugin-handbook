@@ -1,46 +1,55 @@
-import { Box, Heading, Stack, Text } from "@sanity/ui";
-import type { ReactNode } from "react";
+import { ArrowLeftIcon } from "@sanity/icons/ArrowLeft";
+import { Box, Button, Heading, Stack, Text } from "@sanity/ui";
+import { useContext } from "react";
+import type { ComponentProps, ReactNode } from "react";
+import { PaneLayoutContext } from "sanity/_singletons";
+import { PaneContent } from "sanity/structure";
 
-import { useHandbookContext } from "../contexts/handbook-context";
-import { isDefined } from "../lib/utils";
-import { PaneHeader } from "./pane-header";
+import { PaneHeader } from "@/components/pane-header";
+import { contentPaddingBlockEnd, contentPaddingBlockStart, contentPaddingInline, contentWidth } from "@/config/layout";
+import { useHandbookContext } from "@/contexts/handbook";
+import { isDefined } from "@/lib/utils";
 
-interface ContentPanelProps {
-  /** Unique identifier linking this panel to its sidebar tab. */
+export type ContentPanelProps = Omit<ComponentProps<typeof PaneContent>, "id" | "title"> & {
   id: string;
-  /** Heading displayed at the top of the panel. */
   title: string;
-  /** Optional description shown beneath the heading. */
   description?: string;
-  /** Panel body content. */
   children: ReactNode;
-}
+};
 
-export function ContentPanel({ id, title, description, children }: ContentPanelProps) {
-  const { activeTab } = useHandbookContext();
-
-  if (activeTab !== id) return null;
+export function ContentPanel({ id, title, description, children, ...props }: ContentPanelProps) {
+  const { setSidebarExpanded } = useHandbookContext();
+  const paneLayout = useContext(PaneLayoutContext);
 
   return (
-    <div
-      id={`panel-${id}`}
-      aria-labelledby={id}
-      role="tabpanel"
-      style={{ display: "flex", flexDirection: "column", height: "100%" }}
-    >
-      <PaneHeader title={title} />
-      <div style={{ flex: 1, overflowY: "auto" }}>
+    <>
+      <PaneHeader
+        title={title}
+        backButton={
+          paneLayout?.collapsed === true && (
+            <Button
+              aria-label="Back"
+              icon={ArrowLeftIcon}
+              mode="bleed"
+              onClick={() => {
+                setSidebarExpanded(true);
+              }}
+            />
+          )
+        }
+      />
+      <PaneContent id={`panel-${id}`} aria-labelledby={id} overflow="auto" {...props}>
         <Box
           style={{
-            maxWidth: "640px",
+            maxWidth: contentWidth,
             boxSizing: "border-box",
             marginInline: "auto",
-            paddingInline: "20px",
-            paddingBlockStart: "32px",
-            paddingBlockEnd: "220px",
+            paddingInline: contentPaddingInline,
+            paddingBlockStart: contentPaddingBlockStart,
+            paddingBlockEnd: contentPaddingBlockEnd,
           }}
         >
-          <Stack marginBottom={6} space={5}>
+          <Stack marginBottom={6} gap={5}>
             <Heading as="h2" size={4}>
               {title}
             </Heading>
@@ -52,7 +61,7 @@ export function ContentPanel({ id, title, description, children }: ContentPanelP
           </Stack>
           {children}
         </Box>
-      </div>
-    </div>
+      </PaneContent>
+    </>
   );
 }

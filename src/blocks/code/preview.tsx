@@ -1,14 +1,12 @@
 import type { PreviewProps } from "sanity";
 
-import { isDefined } from "../../lib/utils";
-import { CodeContent } from "./content";
+import { CodeContent } from "@/blocks/code/content";
+import { isDefined } from "@/lib/utils";
 
-interface CodePreviewProps extends PreviewProps {
-  /** Source code to display. */
+export type CodePreviewProps = PreviewProps & {
   code?: string;
-  /** Programming language for syntax highlighting. */
   language?: string;
-}
+};
 
 export function CodePreview({ code, language }: CodePreviewProps) {
   if (!isDefined(code)) return null;

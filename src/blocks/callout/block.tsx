@@ -1,56 +1,33 @@
 import { PortableText } from "@portabletext/react";
-import type { PortableTextBlock } from "@portabletext/react";
-import type { ReactNode } from "react";
+import type { PortableTextComponents, PortableTextMarkComponentProps } from "@portabletext/react";
+import type { ComponentProps } from "react";
 
-import type { CalloutVariant } from "./content";
-import { CalloutContent } from "./content";
+import { CalloutContent } from "@/blocks/callout/content";
+import { PortableCode } from "@/components/content/portable/code";
+import { PortableLink } from "@/components/content/portable/link";
+import { contentSpacing } from "@/config/layout";
+import type { SanityHandbookLink } from "@/schemas/annotations/link";
+import type { SanityHandbookCallout } from "@/schemas/blocks/callout";
 
-interface HandbookCalloutValue {
-  /** Document type identifier. */
-  _type: "handbook.callout";
-  /** Visual style and intent of the callout. */
-  variant: CalloutVariant;
-  /** Portable Text content displayed inside the callout. */
-  body: PortableTextBlock[];
-}
+export type CalloutBlockProps = Omit<ComponentProps<typeof CalloutContent>, "variant" | "children"> & {
+  value: SanityHandbookCallout;
+};
 
-export function CalloutBlock({ value }: { value: HandbookCalloutValue }) {
+/** Overrides for a callout body, which takes the card's own text styling and leaves paragraphs unwrapped. */
+const components: PortableTextComponents = {
+  block: { normal: ({ children }) => <>{children}</> },
+  marks: {
+    code: ({ children }) => <PortableCode>{children}</PortableCode>,
+    link: ({ children, value }: PortableTextMarkComponentProps<SanityHandbookLink>) => (
+      <PortableLink href={value?.href}>{children}</PortableLink>
+    ),
+  },
+};
+
+export function CalloutBlock({ value, style, ...props }: CalloutBlockProps) {
   return (
-    <div style={{ marginBlock: "2rem" }}>
-      <CalloutContent variant={value.variant}>
-        <PortableText
-          value={value.body}
-          components={{
-            block: { normal: ({ children }) => <>{children}</> },
-            marks: {
-              strong: ({ children }) => <strong>{children}</strong>,
-              em: ({ children }) => <em>{children}</em>,
-              code: ({ children }) => (
-                <code
-                  style={{
-                    padding: "0.125rem 0.25rem",
-                    fontSize: "0.875em",
-                    backgroundColor: "var(--card-code-bg-color)",
-                    borderRadius: "0.125rem",
-                  }}
-                >
-                  {children}
-                </code>
-              ),
-              link: ({ children, value: mark }: { children: ReactNode; value?: { href?: string } }) => (
-                <a
-                  href={mark?.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: "var(--card-fg-color)" }}
-                >
-                  {children}
-                </a>
-              ),
-            },
-          }}
-        />
-      </CalloutContent>
-    </div>
+    <CalloutContent variant={value.variant} style={{ marginBlock: contentSpacing.callout, ...style }} {...props}>
+      <PortableText value={value.body} components={components} />
+    </CalloutContent>
   );
 }

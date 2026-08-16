@@ -1,15 +1,24 @@
 import type { PreviewProps } from "sanity";
 
-import type { CalloutVariant } from "./content";
-import { CalloutContent } from "./content";
+import { CalloutContent } from "@/blocks/callout/content";
+import type { CalloutVariant } from "@/blocks/callout/content";
+import type { SanityHandbookCallout } from "@/schemas/blocks/callout";
 
-interface CalloutPreviewProps extends PreviewProps {
-  /** Visual style variant for the callout. */
+export type CalloutPreviewProps = PreviewProps & {
   variant?: CalloutVariant;
-  /** Plain text content extracted from the callout body. */
-  text?: string;
-}
+  body?: SanityHandbookCallout["body"];
+};
 
-export function CalloutPreview({ variant, text }: CalloutPreviewProps) {
-  return <CalloutContent variant={variant ?? "tip"}>{text}</CalloutContent>;
+export function CalloutPreview({ variant, body }: CalloutPreviewProps) {
+  return (
+    <CalloutContent variant={variant ?? "tip"}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {body?.map(({ _key, children }) => (
+          <div key={_key} style={{ whiteSpace: "pre-wrap" }}>
+            {children.map((child) => child.text).join("")}
+          </div>
+        ))}
+      </div>
+    </CalloutContent>
+  );
 }
