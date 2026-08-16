@@ -121,5 +121,5 @@ To create a new release, follow these steps in order:
 1. Bump the version in `package.json` following semver.
 2. Commit the version bump.
 3. Draft a changelog and present it for review before proceeding.
-4. Create a GitHub release with `gh release create v<version> --title "v<version>" --notes "<changelog>"`. Add `--prerelease` for pre-1.0 versions.
-5. Publish to npm with `npm publish`.
+4. Create a GitHub release with `gh release create v<version> --title "v<version>" --notes "<changelog>"`. Add `--prerelease` for pre-1.0 versions. This creates the tag, so any later amend to the release commit has to move the tag with it.
+5. Stop and hand over. Publishing to npm is done by hand, once everything above is settled, because npm asks for a one-time password. Amend the release notes with `gh release edit v<version> --notes-file <file>` if anything needs correcting first.

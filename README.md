@@ -29,7 +29,7 @@ Handbook adds a dedicated tool to Sanity Studio that serves two purposes: it aut
 
 ## Installation
 
-Handbook is built for Sanity Studio 6 and React 19, and declares both as peer dependencies, so your Studio must already be on those versions.
+Handbook is built for Sanity Studio 6 and React 19, and declares both as peer dependencies, so your Studio must already be on those versions. You'll need Node 22.12 or later.
 
 ```bash
 bun add -E @driftime/sanity-plugin-handbook
@@ -70,7 +70,7 @@ export default defineConfig({
 });
 ```
 
-This registers a Handbook tool in the Studio navigation. Opening it displays a sidebar led by a built-in Getting Started section — a page explaining how to read the Handbook, and an overview listing every role and the document types filling it — followed by a labelled section per role. Selecting a document type shows its fields with their descriptions. Each document type carries through the `icon` set on its schema. See [Configuration](#configuration) for all available options.
+This registers a Handbook tool in the Studio navigation. Opening it shows a sidebar that starts with a built-in Getting Started section: a page on how to read the Handbook, and an overview of every role and its document types. Your own roles follow, one labelled section each. Selecting a document type shows its fields and their descriptions, with the `icon` from its schema. See [Configuration](#configuration) for all available options.
 
 <br />
 
@@ -135,17 +135,17 @@ If no `handbook` property is provided, the tool falls back to the field's `title
 
 ### Subfield Browsing
 
-Fields with nested structure display a collapsible section that editors can expand to explore subfields. Custom types extending built-in types like `image` or `file` show only the fields you add — inherited fields are excluded automatically. Circular type references are detected and labelled rather than rendering infinitely.
+Fields with nested structure display a collapsible section that editors can expand to explore subfields. Custom types extending built-in types like `image` or `file` show only the fields you add. Inherited fields are excluded automatically. Circular type references are detected and labelled rather than rendering infinitely.
 
 ## Guide Content
 
-Handbook includes a guide authoring system powered by Portable Text. The plugin automatically registers a `handbook.handbook` singleton and a `handbook.guide` document type — no additional schema setup is required.
+Handbook includes a guide authoring system powered by Portable Text. The plugin automatically registers a `handbook.handbook` singleton and a `handbook.guide` document type. No additional schema setup is required.
 
 The singleton defines the groups and ordering of your guides. Each group contains references to guide documents, which carry a title, an optional description shown beneath the heading, and a rich text body with built-in support for:
 
 - Paragraph, heading, and blockquote styles
-- Bold, italic, strikethrough, and inline code formatting
 - Bullet and numbered lists
+- Bold, italic, strikethrough, and inline code formatting
 - Inline links
 - Image blocks with caption and alternative text
 - Video blocks with caption
@@ -224,7 +224,7 @@ handbookPlugin({
 
 When an editors list is provided, only users whose email appears in the list can create or manage Handbook documents. Users not in the list are excluded entirely. If no editors list is provided, all users have full access.
 
-Independently of that list, the Handbook singleton is locked for everyone: it never appears in the create-new menu, and its delete, duplicate, and unpublish actions are removed. Guides stay fully creatable by anyone the list permits.
+Independently of that list, the Handbook singleton is locked for everyone: it never appears in the create-new menu, and its delete, duplicate, and unpublish actions are removed. Anyone the list permits can still create guides.
 
 The `useIsHandbookEditor` hook is exported for use in your own components if you need to conditionally render UI based on editor permissions. It reads the `editors` you gave the plugin, and takes a list as an optional argument to override that.
 
@@ -236,7 +236,7 @@ const isEditor = useIsHandbookEditor();
 
 ## Structure Integration
 
-The Handbook tool renders guides but doesn't author them — that happens in the Structure tool, and nothing appears there until you add it. Use the `handbookStructure` helper to add a Handbook singleton editor and a Handbook Guides list, both restricted to the same editors you gave the plugin.
+The Handbook tool displays guides, but you author them in the Structure tool. Nothing appears there until you add it. Use the `handbookStructure` helper to add a Handbook singleton editor and a Handbook Guides list, both restricted to the same editors you gave the plugin.
 
 ```typescript
 import { handbookStructure } from "@driftime/sanity-plugin-handbook";
@@ -258,11 +258,11 @@ export const structure: StructureResolver = (structureBuilder, context) => {
 };
 ```
 
-Two things the helper asks of the surrounding structure. It reads the current user from the resolver's second argument, so accept both parameters even where the rest of your structure only needs the builder. And it returns an empty array for users outside the editors list, so add its divider only when it has items, otherwise those users see a divider with nothing beneath it.
+The helper needs two things from your structure. It reads the current user from the resolver's second argument, so accept both parameters even if the rest of your structure only needs the builder. It also returns an empty array for users outside the editors list, so only add the divider when there are items. Otherwise those users see a divider with nothing under it.
 
-The helper reads the `editors` you gave the plugin, so there is nothing to declare in two places. It takes a list as an optional third argument only to override that, which a Studio running several workspaces under different editors would need.
+The helper reads the `editors` you gave the plugin, so you don't declare them twice. Pass a list as the optional third argument to override that, which you need if your Studio runs several workspaces with different editors.
 
-The filter is only needed where a structure draws on `documentTypeListItems()`, which lists every registered type and so includes the two the plugin adds. A structure built from your own document definitions never picks them up, and can drop the filter entirely.
+The filter is only needed where a structure draws on `documentTypeListItems()`, which lists every registered type and so includes the two the plugin adds. A structure built from your own document definitions won't include them, so you can drop the filter.
 
 The Handbook singleton is where you define guide groups and their ordering. Each group contains references to individual guide documents that editors can reorder as needed.
 
@@ -296,7 +296,7 @@ Individual guides are authored as `handbook.guide` documents, which can be creat
 
 ## Configuration
 
-Only `roles` is required, since it names the document types the Handbook documents. Everything else falls back to a sensible default.
+Only `roles` is required, since it tells the plugin which document types to cover. Everything else falls back to a sensible default.
 
 | Option                     | Type                              | Default                                                                                 | Purpose                                                                          |
 | -------------------------- | --------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
@@ -309,7 +309,7 @@ Only `roles` is required, since it names the document types the Handbook documen
 
 ## Exported Types
 
-Every type behind the public API is exported, for typing your own configuration or for querying Handbook content outside the Studio.
+These types are exported for typing your own configuration and for querying Handbook content outside the Studio.
 
 Configuration you supply:
 
@@ -336,7 +336,7 @@ Content the dataset stores:
 
 ## Acknowledgements
 
-The icons in `src/icons` are derived from [Lucide](https://lucide.dev) and redrawn as standalone components, so the plugin carries its own iconography without depending on the Lucide package. Icons for controls the Studio already draws, such as disclosure arrows, come from `@sanity/icons` so they match their surroundings. Lucide is distributed under the [ISC License](https://github.com/lucide-icons/lucide/blob/main/LICENSE).
+The icons in `src/icons` are derived from [Lucide](https://lucide.dev) and redrawn as standalone components, so the plugin ships its own icons without depending on the Lucide package. Icons for controls the Studio already draws, such as disclosure arrows, come from `@sanity/icons` so they match their surroundings. Lucide is distributed under the [ISC License](https://github.com/lucide-icons/lucide/blob/main/LICENSE).
 
 <br />
 <br />
