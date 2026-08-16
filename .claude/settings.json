@@ -6,7 +6,17 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/lint.sh"
+            "command": ".claude/hooks/format.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/check.sh"
           }
         ]
       }
