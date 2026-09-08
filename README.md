@@ -2,9 +2,10 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/icon-dark.svg" />
     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/icon-light.svg" />
-    <img src="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/icon-light.svg" alt="Handbook icon" width="48" />
+    <img src="https://raw.githubusercontent.com/driftime/sanity-plugin-handbook/HEAD/.github/assets/icon-light.svg" alt="Handbook plugin logo" width="48" />
   </picture>
-  <h1>Handbook — A Sanity Plugin</h1>
+  <h1>Handbook</h1>
+  <p><strong>A Sanity Studio plugin by Driftime®</strong></p>
   <p>Schema-driven documentation and editorial guides, built right into Sanity Studio.</p>
 </div>
 
@@ -34,6 +35,8 @@ Handbook is built for Sanity Studio 6 and React 19, and declares both as peer de
 ```bash
 bun add -E @driftime/sanity-plugin-handbook
 ```
+
+<br />
 
 ## Basic Setup
 
@@ -137,6 +140,8 @@ If no `handbook` property is provided, the tool falls back to the field's `title
 
 Fields with nested structure display a collapsible section that editors can expand to explore subfields. Custom types extending built-in types like `image` or `file` show only the fields you add. Inherited fields are excluded automatically. Circular type references are detected and labelled rather than rendering infinitely.
 
+<br />
+
 ## Guide Content
 
 Handbook includes a guide authoring system powered by Portable Text. The plugin automatically registers a `handbook.handbook` singleton and a `handbook.guide` document type. No additional schema setup is required.
@@ -211,6 +216,8 @@ export default defineConfig({
 });
 ```
 
+<br />
+
 ## Editor Permissions
 
 Restrict who can create and edit Handbook documents by providing a list of email addresses.
@@ -233,6 +240,8 @@ import { useIsHandbookEditor } from "@driftime/sanity-plugin-handbook";
 
 const isEditor = useIsHandbookEditor();
 ```
+
+<br />
 
 ## Structure Integration
 
@@ -307,6 +316,8 @@ Only `roles` is required, since it tells the plugin which document types to cove
 | `editors`                  | `string[]`                        | `undefined`                                                                             | Email addresses permitted to edit Handbook documents. Unrestricted when omitted. |
 | `undocumentedFieldMessage` | `string`                          | `"This field has not been documented yet. Contact your development team for guidance."` | Fallback message shown when a field has no description.                          |
 
+<br />
+
 ## Exported Types
 
 These types are exported for typing your own configuration and for querying Handbook content outside the Studio.
@@ -334,6 +345,8 @@ Content the dataset stores:
 | `SanityHandbookVideo`          | A video block, with its asset and caption.                                |
 | `SanityHandbookLink`           | A link annotation, with the web address it points to.                     |
 
+<br />
+
 ## Acknowledgements
 
 The icons in `src/icons` are derived from [Lucide](https://lucide.dev) and redrawn as standalone components, so the plugin ships its own icons without depending on the Lucide package. Icons for controls the Studio already draws, such as disclosure arrows, come from `@sanity/icons` so they match their surroundings. Lucide is distributed under the [ISC License](https://github.com/lucide-icons/lucide/blob/main/LICENSE).
@@ -342,7 +355,15 @@ The icons in `src/icons` are derived from [Lucide](https://lucide.dev) and redra
 <br />
 
 <div align="center">
-  <a href="https://driftime.com" target="_blank">
+  <p><strong>Built alongside <a href="https://cairn.driftime.com">Cairn</a>, a starting point for responsible web experiences.</strong></p>
+  <p>Part of a suite of Sanity Studio plugins by Driftime®</p>
+  <p><a href="https://github.com/driftime/sanity-plugin-handbook">Handbook</a> · <a href="https://github.com/driftime/sanity-plugin-icon">Icon</a></p>
+</div>
+
+<br />
+
+<div align="center">
+  <a href="https://driftime.com">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://driftime.com/driftime-github-logo-dark.svg" />
       <source media="(prefers-color-scheme: light)" srcset="https://driftime.com/driftime-github-logo.svg" />
